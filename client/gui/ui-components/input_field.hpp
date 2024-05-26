@@ -61,6 +61,7 @@ private:
     sf::RectangleShape m_cursor;
     sf::Clock m_cursor_timer;
     float m_cursorPosition;
+    float m_scrollOffset;
 
     void update_cursor_position();
     void process_input(const sf::Event::TextEvent& text_event);
