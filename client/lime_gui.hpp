@@ -24,10 +24,17 @@ public:
         newMessagesReceived(false) {
 
         window.setFramerateLimit(60);
+        sf::Image icon;
+        if (!icon.loadFromFile("limechat.png")) {
+            std::cerr << "Failed to load application icon!" << std::endl;
+        }
+        else {
+            window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+        }
+
         menuUtil = std::make_unique<MenuUtil>();
 
         messageDisplayMenu = std::make_unique<ScrollableTextArea>(sf::Vector2f(0, 20), 600, 400);
-        //messageDisplayMenu->set_background_color(sf::Color(0, 0, 0, 0));
         menuUtil->add_menu(messageDisplayMenu.get());
 
         if (!backgroundTexture.loadFromFile("background.png")) {
@@ -39,11 +46,11 @@ public:
 
         inputMenu = std::make_unique<Menu>(sf::Vector2f(20, 0), false, true);
         inputMenu->set_background_color(sf::Color(200, 200, 200));
-        inputField = std::make_unique<InputField>("Enter your message", 400, 40);
+        inputField = std::make_unique<InputField>("Enter your message", 450, 40);
         inputField->set_position(20, 0);
         inputField->set_background_color(sf::Color::White);
-        inputField->set_text_color(sf::Color::Black);
-        inputMenu->add_input_field("Enter your message", 400, 40);
+        inputField->set_text_color(sf::Color::White);
+        inputMenu->add_input_field("Enter your message", 450, 40);
         inputField->set_enter_callback([this](const std::string& message) {
             if (!message.empty()) {
                 auto now = std::chrono::system_clock::now();
