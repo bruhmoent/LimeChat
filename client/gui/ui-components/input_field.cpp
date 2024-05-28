@@ -3,8 +3,8 @@
 
 InputField::InputField(const std::string& placeholder, float width, float height)
     : m_placeholder(placeholder), m_width(width), m_height(height), m_focused(false),
-    m_text_color(sf::Color::Black), m_background_color(sf::Color::White), m_cursorPosition(0),
-    m_scrollOffset(0), m_text_object(nullptr), m_initialTextHeight(0.0f), m_placeholder_color(sf::Color(200, 200, 200)){
+    m_text_color(sf::Color::Black), m_background_color(sf::Color::White), m_cursor_position(0),
+    m_scroll_offset(0), m_text_object(nullptr), m_initial_text_height(0.0f), m_placeholder_color(sf::Color(200, 200, 200)){
     m_background_shape.setSize(sf::Vector2f(width, height));
     m_background_shape.setFillColor(m_background_color);
 
@@ -15,7 +15,7 @@ InputField::InputField(const std::string& placeholder, float width, float height
     m_cursor.setSize(sf::Vector2f(2.f, height - 10));
     update_cursor_position();
 
-    m_initialTextHeight = m_text_object->get_local_bounds().height;
+    m_initial_text_height = m_text_object->get_local_bounds().height;
 }
 
 InputField::~InputField() {}
@@ -23,11 +23,11 @@ InputField::~InputField() {}
 void InputField::draw(sf::RenderWindow& window) {
     window.draw(m_background_shape);
 
-    sf::View originalView = window.getView();
+    sf::View original_view = window.getView();
 
-    sf::View textView(sf::FloatRect(m_scrollOffset, 0.f, m_width, m_height));
-    textView.setViewport(sf::FloatRect(m_pos.x / window.getSize().x, m_pos.y / window.getSize().y, m_width / window.getSize().x, m_height / window.getSize().y));
-    window.setView(textView);
+    sf::View text_view(sf::FloatRect(m_scroll_offset, 0.f, m_width, m_height));
+    text_view.setViewport(sf::FloatRect(m_pos.x / window.getSize().x, m_pos.y / window.getSize().y, m_width / window.getSize().x, m_height / window.getSize().y));
+    window.setView(text_view);
 
     window.draw(m_text_object->get_text());
 
@@ -40,7 +40,7 @@ void InputField::draw(sf::RenderWindow& window) {
         }
     }
 
-    window.setView(originalView);
+    window.setView(original_view);
 }
 
 void InputField::handle_event(const sf::Event& event) {
@@ -52,10 +52,10 @@ void InputField::handle_event(const sf::Event& event) {
                 m_text_object->set_text("");
                 m_text_object->set_color(m_text_color.r, m_text_color.g, m_text_color.b);
             }
-            float mouseX = mousePos.x - (m_pos.x + 5.f - m_scrollOffset);
+            float mouseX = mousePos.x - (m_pos.x + 5.f - m_scroll_offset);
             for (size_t i = 0; i <= m_text.size(); ++i) {
                 if (mouseX < m_text_object->get_text().findCharacterPos(i).x) {
-                    m_cursorPosition = i;
+                    m_cursor_position = i;
                     break;
                 }
             }
@@ -74,45 +74,45 @@ void InputField::handle_event(const sf::Event& event) {
     }
     else if (event.type == sf::Event::KeyPressed && m_focused) {
         if (event.key.code == sf::Keyboard::Left) {
-            if (m_cursorPosition > 0) {
-                m_cursorPosition--;
+            if (m_cursor_position > 0) {
+                m_cursor_position--;
                 update_cursor_position();
             }
         }
         else if (event.key.code == sf::Keyboard::Right) {
-            if (m_cursorPosition < m_text.length()) {
-                m_cursorPosition++;
+            if (m_cursor_position < m_text.length()) {
+                m_cursor_position++;
                 update_cursor_position();
             }
         }
     }
 }
 
-void InputField::process_input(const sf::Event::TextEvent& textEvent) {
-    if (textEvent.unicode == '\b') {
+void InputField::process_input(const sf::Event::TextEvent& text_event) {
+    if (text_event.unicode == '\b') {
         handle_backspace();
     }
-    else if (textEvent.unicode < 128 && textEvent.unicode != 13) { // ASCII characters
+    else if (text_event.unicode < 128 && text_event.unicode != 13) { // ASCII characters
         if (m_text.empty()) {
             m_text_object->set_color(m_text_color.r, m_text_color.g, m_text_color.b);
         }
-        m_text.insert(m_text.begin() + m_cursorPosition, static_cast<char>(textEvent.unicode));
-        m_cursorPosition++;
+        m_text.insert(m_text.begin() + m_cursor_position, static_cast<char>(text_event.unicode));
+        m_cursor_position++;
         m_text_object->set_text(m_text);
         update_cursor_position();
     }
-    else if (textEvent.unicode == 13) { // Enter key
-        if (m_enterCallback) {
-            m_enterCallback(m_text);
+    else if (text_event.unicode == 13) { // Enter key
+        if (m_enter_callback) {
+            m_enter_callback(m_text);
         }
         clear();
     }
 }
 
 void InputField::handle_backspace() {
-    if (m_cursorPosition > 0 && m_cursorPosition <= m_text.length()) {
-        m_text.erase(m_cursorPosition - 1, 1);
-        m_cursorPosition--;
+    if (m_cursor_position > 0 && m_cursor_position <= m_text.length()) {
+        m_text.erase(m_cursor_position - 1, 1);
+        m_cursor_position--;
         m_text_object->set_text(m_text);
         update_cursor_position();
         if (m_text.empty()) {
@@ -123,47 +123,47 @@ void InputField::handle_backspace() {
 }
 
 void InputField::update_cursor_position() {
-    float cursorX;
+    float cursor_x;
     
-    if (m_cursorPosition == 0) {
-        cursorX = m_pos.x;
-    } else if (m_cursorPosition > 0 && m_cursorPosition <= m_text.length()) {
-        cursorX = m_text_object->get_text().findCharacterPos(m_cursorPosition).x;
+    if (m_cursor_position == 0) {
+        cursor_x = m_pos.x;
+    } else if (m_cursor_position > 0 && m_cursor_position <= m_text.length()) {
+        cursor_x = m_text_object->get_text().findCharacterPos(m_cursor_position).x;
     } else {
-        cursorX = m_text_object->get_text().findCharacterPos(m_text.length()).x;
+        cursor_x = m_text_object->get_text().findCharacterPos(m_text.length()).x;
     }
 
-    float cursorVisibleX = cursorX - m_scrollOffset;
+    float cursorVisibleX = cursor_x - m_scroll_offset;
 
     if (cursorVisibleX < m_pos.x) {
-        m_scrollOffset -= (m_pos.x - cursorVisibleX);
+        m_scroll_offset -= (m_pos.x - cursorVisibleX);
     } else if (cursorVisibleX > m_pos.x + m_width) {
-        m_scrollOffset += (cursorVisibleX - (m_pos.x + m_width));
+        m_scroll_offset += (cursorVisibleX - (m_pos.x + m_width));
     }
 
-    float textWidth = m_text_object->get_text().getGlobalBounds().width;
-    float maxScrollOffset = std::max(0.f, textWidth - m_width);
-    if (m_scrollOffset < 0) {
-        m_scrollOffset = 0;
-    } else if (m_scrollOffset > maxScrollOffset) {
-        m_scrollOffset = maxScrollOffset;
+    float text_width = m_text_object->get_text().getGlobalBounds().width;
+    float max_scroll_offset = std::max(0.f, text_width - m_width);
+    if (m_scroll_offset < 0) {
+        m_scroll_offset = 0;
+    } else if (m_scroll_offset > max_scroll_offset) {
+        m_scroll_offset = max_scroll_offset;
     }
 
-    m_text_object->set_position(m_pos.x - m_scrollOffset, m_pos.y + (m_height - m_initialTextHeight) / 2.f);
+    m_text_object->set_position(m_pos.x - m_scroll_offset, m_pos.y + (m_height - m_initial_text_height) / 2.f);
 
-    float cursorY = m_pos.y + (m_height - m_cursor.getSize().y) / 2.f;
-    m_cursor.setPosition(cursorX, cursorY);
+    float cursor_y = m_pos.y + (m_height - m_cursor.getSize().y) / 2.f;
+    m_cursor.setPosition(cursor_x, cursor_y);
 }
 
 void InputField::set_enter_callback(EnterCallback callback) {
-    m_enterCallback = std::move(callback);
+    m_enter_callback = std::move(callback);
 }
 
 void InputField::set_position(float x, float y) {
     m_pos.x = x;
     m_pos.y = y;
     m_background_shape.setPosition(m_pos);
-    m_text_object->set_position(x + 5.f - m_scrollOffset, y + (m_height - m_text_object->get_local_bounds().height) / 2.f);
+    m_text_object->set_position(x + 5.f - m_scroll_offset, y + (m_height - m_text_object->get_local_bounds().height) / 2.f);
     update_cursor_position();
 }
 
@@ -195,8 +195,8 @@ void InputField::clear() {
     m_text.clear();
     m_text_object->set_text(m_placeholder);
     m_text_object->set_color(m_placeholder_color.r, m_placeholder_color.g, m_placeholder_color.b);
-    m_cursorPosition = 0;
-    m_scrollOffset = 0;
+    m_cursor_position = 0;
+    m_scroll_offset = 0;
     update_cursor_position();
 }
 

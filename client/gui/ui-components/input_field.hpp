@@ -47,7 +47,7 @@ public:
     float m_width;
     float m_height;
 private:
-    EnterCallback m_enterCallback;
+    EnterCallback m_enter_callback;
     std::string m_text;
     std::string m_placeholder;
     sf::Color m_text_color;
@@ -58,10 +58,10 @@ private:
     sf::RectangleShape m_cursor;
     std::unique_ptr<TextObject> m_text_object;
     sf::Vector2f m_pos;
-    float m_cursorPosition;
-    float m_scrollOffset;
-    float m_initialTextHeight;
-    float m_cursorOffset = 0.f;
+    float m_cursor_position;
+    float m_scroll_offset;
+    float m_initial_text_height;
+    float m_cursor_offset = 0.f;
     bool m_focused;
 
     void update_cursor_position();
