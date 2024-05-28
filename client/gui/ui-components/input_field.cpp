@@ -137,8 +137,8 @@ void InputField::update_cursor_position() {
 
     if (cursorVisibleX < m_pos.x) {
         m_scroll_offset -= (m_pos.x - cursorVisibleX);
-    } else if (cursorVisibleX > m_pos.x + m_width) {
-        m_scroll_offset += (cursorVisibleX - (m_pos.x + m_width));
+    } else if (cursorVisibleX > m_pos.x + m_width - 20.f) {
+        m_scroll_offset += (cursorVisibleX - (m_pos.x + m_width - 20.f));
     }
 
     float text_width = m_text_object->get_text().getGlobalBounds().width;
